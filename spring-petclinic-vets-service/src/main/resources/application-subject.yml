@@ -1,0 +1,38 @@
+# CS 8674 starting system: the published vets-service, run on its own
+# against the shared MySQL schema. Use with:
+#   --spring.profiles.active=production,subject
+# 'production' keeps the published behaviour (vet list caching);
+# 'subject' replaces what the config server and Eureka would supply; values
+# taken from spring-petclinic-microservices-config (application.yml, vets-service.yml).
+
+spring:
+  cloud:
+    config:
+      enabled: false          # no config server in the starting system
+  datasource:
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/petclinic}
+    username: ${MYSQL_USER:petclinic}
+    password: ${MYSQL_PASS:petclinic}
+  sql:
+    init:
+      mode: never             # the database container creates the schema
+  jpa:
+    open-in-view: false       # as in the published config repo
+    hibernate:
+      ddl-auto: none
+
+server:
+  port: 8083                  # the port the published setup gives vets-service
+
+eureka:
+  client:
+    enabled: false            # no discovery server; clinic-core does not call vets
+
+management:
+  tracing:
+    enabled: false            # no Zipkin server in the starting system
+
+vets:
+  cache:
+    ttl: 60                   # values the published config server supplies
+    heap-size: 100
