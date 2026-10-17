@@ -23,12 +23,24 @@ spring:
 
 server:
   port: 8083                  # the port the published setup gives vets-service
+  tomcat:
+    basedir: .
+    accesslog:                # one line per request, including the endpoint template it matched
+      enabled: true
+      directory: logs
+      prefix: access-vets
+      buffered: false
+      pattern: '%t "%r" %s %D tmpl=%{org.springframework.web.servlet.HandlerMapping.bestMatchingPattern}r'
 
 eureka:
   client:
     enabled: false            # no discovery server; clinic-core does not call vets
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'          # as in the published config repo; exposes /actuator/mappings
   tracing:
     enabled: false            # no Zipkin server in the starting system
 
